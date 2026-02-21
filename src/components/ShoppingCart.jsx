@@ -10,6 +10,14 @@ const ShoppingCart = () => {
     description: ''
   });
   const [showCheckout, setShowCheckout] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: '' });
+    }, 3000);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -58,6 +66,16 @@ const ShoppingCart = () => {
     setShowCheckout(false);
   };
 
+  const handleSubmitOrder = () => {
+    showToast('✅ Order submitted successfully!', 'success');
+    
+    // Reset cart after 3 seconds
+    setTimeout(() => {
+      setProducts([]);
+      setShowCheckout(false);
+    }, 3000);
+  };
+
   // Calculate totals
   const calculateTotals = () => {
     const subtotal = products.reduce((sum, product) => {
@@ -87,6 +105,15 @@ const ShoppingCart = () => {
   if (showCheckout) {
     return (
       <div className="shopping-cart-container">
+        {/* Toast Notification */}
+        {toast.show && (
+          <div className={`toast ${toast.type}`}>
+            <div className="toast-content">
+              {toast.message}
+            </div>
+          </div>
+        )}
+
         <div className="cart-header checkout-header">
           <h1>🛒 Checkout</h1>
           <p className="checkout-subtitle">Review your order</p>
@@ -182,8 +209,8 @@ const ShoppingCart = () => {
                   <span>${total}</span>
                 </div>
 
-                <button className="complete-checkout-button">
-                  Complete Purchase
+                <button className="complete-checkout-button" onClick={handleSubmitOrder}>
+                  Submit Order
                   <span className="button-icon">→</span>
                 </button>
               </div>
