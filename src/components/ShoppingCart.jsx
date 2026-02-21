@@ -68,20 +68,28 @@ const ShoppingCart = () => {
       return sum + product.quantity;
     }, 0);
 
+    const tax = subtotal * 0.08; // 8% tax
+    const shipping = subtotal > 50 ? 0 : 5.99; // Free shipping over $50
+    const total = subtotal + tax + shipping;
+
     return {
       subtotal: subtotal.toFixed(2),
+      tax: tax.toFixed(2),
+      shipping: shipping.toFixed(2),
+      total: total.toFixed(2),
       totalItems
     };
   };
 
-  const { subtotal, totalItems } = calculateTotals();
+  const { subtotal, tax, shipping, total, totalItems } = calculateTotals();
 
   // Checkout Screen
   if (showCheckout) {
     return (
       <div className="shopping-cart-container">
-        <div className="cart-header">
-          <h1>Checkout</h1>
+        <div className="cart-header checkout-header">
+          <h1>🛒 Checkout</h1>
+          <p className="checkout-subtitle">Review your order</p>
         </div>
 
         <div className="checkout-section">
@@ -89,45 +97,97 @@ const ShoppingCart = () => {
             ← Back to Cart
           </button>
 
-          <div className="checkout-content">
-            <h2>Order Summary</h2>
-            <div className="checkout-products">
-              {products.map(product => (
-                <div key={product.id} className="checkout-item">
-                  <div className="checkout-item-info">
-                    <h3>{product.name}</h3>
-                    {product.description && (
-                      <p className="checkout-item-description">{product.description}</p>
-                    )}
+          <div className="checkout-grid">
+            {/* Order Summary Section */}
+            <div className="order-summary-section">
+              <h2 className="section-title">
+                <span className="title-icon">📦</span>
+                Order Summary
+              </h2>
+              
+              <div className="checkout-products">
+                {products.map((product, index) => (
+                  <div key={product.id} className="checkout-item">
+                    <div className="checkout-item-number">{index + 1}</div>
+                    <div className="checkout-item-content">
+                      <div className="checkout-item-info">
+                        <h3>{product.name}</h3>
+                        {product.description && (
+                          <p className="checkout-item-description">{product.description}</p>
+                        )}
+                        <div className="checkout-item-meta">
+                          <span className="meta-price">${product.price.toFixed(2)}</span>
+                          <span className="meta-separator">×</span>
+                          <span className="meta-quantity">{product.quantity}</span>
+                        </div>
+                      </div>
+                      <div className="checkout-item-total">
+                        ${(product.price * product.quantity).toFixed(2)}
+                      </div>
+                    </div>
                   </div>
-                  <div className="checkout-item-details">
-                    <span>${product.price.toFixed(2)} × {product.quantity}</span>
-                    <span className="checkout-item-total">
-                      ${(product.price * product.quantity).toFixed(2)}
-                    </span>
-                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Payment Summary Section */}
+            <div className="payment-summary-section">
+              <h2 className="section-title">
+                <span className="title-icon">💳</span>
+                Payment Summary
+              </h2>
+              
+              <div className="payment-summary-card">
+                <div className="summary-info-row">
+                  <span className="info-icon">📊</span>
+                  <span>Total Products:</span>
+                  <span className="info-value">{products.length}</span>
                 </div>
-              ))}
-            </div>
+                
+                <div className="summary-info-row">
+                  <span className="info-icon">📦</span>
+                  <span>Total Items:</span>
+                  <span className="info-value">{totalItems}</span>
+                </div>
 
-            <div className="checkout-summary">
-              <div className="checkout-summary-row">
-                <span>Total Items:</span>
-                <span>{totalItems}</span>
-              </div>
-              <div className="checkout-summary-row">
-                <span>Total Products:</span>
-                <span>{products.length}</span>
-              </div>
-              <div className="checkout-summary-row checkout-total">
-                <span>Total Amount:</span>
-                <span>${subtotal}</span>
+                <div className="summary-divider"></div>
+
+                <div className="summary-calculation-row">
+                  <span>Subtotal:</span>
+                  <span>${subtotal}</span>
+                </div>
+
+                <div className="summary-calculation-row">
+                  <span>Tax (8%):</span>
+                  <span>${tax}</span>
+                </div>
+
+                <div className="summary-calculation-row">
+                  <span>Shipping:</span>
+                  <span className={parseFloat(shipping) === 0 ? 'free-shipping' : ''}>
+                    {parseFloat(shipping) === 0 ? 'FREE' : `$${shipping}`}
+                  </span>
+                </div>
+
+                {parseFloat(subtotal) < 50 && parseFloat(subtotal) > 0 && (
+                  <div className="shipping-notice">
+                    💡 Add ${(50 - parseFloat(subtotal)).toFixed(2)} more for free shipping!
+                  </div>
+                )}
+
+                <div className="summary-divider"></div>
+
+                <div className="summary-total-row">
+                  <span>Total Amount:</span>
+                  <span>${total}</span>
+                </div>
+
+                <button className="complete-checkout-button">
+                  Complete Purchase
+                  <span className="button-icon">→</span>
+                </button>
               </div>
             </div>
-
-            <button className="complete-checkout-button">
-              Complete Purchase
-            </button>
           </div>
         </div>
       </div>
