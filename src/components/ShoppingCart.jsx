@@ -45,6 +45,10 @@ const ShoppingCart = () => {
     });
   };
 
+  const handleDeleteProduct = (productId) => {
+    setProducts(prev => prev.filter(product => product.id !== productId));
+  };
+
   return (
     <div className="shopping-cart-container">
       <div className="cart-header">
@@ -137,6 +141,13 @@ const ShoppingCart = () => {
                     </span>
                   </div>
                 </div>
+                <button 
+                  className="delete-button" 
+                  onClick={() => handleDeleteProduct(product.id)}
+                  aria-label="Delete product"
+                >
+                  <span className="delete-icon">×</span>
+                </button>
               </div>
             ))}
           </div>
