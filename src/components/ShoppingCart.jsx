@@ -9,6 +9,7 @@ const ShoppingCart = () => {
     quantity: '',
     description: ''
   });
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,6 +50,14 @@ const ShoppingCart = () => {
     setProducts(prev => prev.filter(product => product.id !== productId));
   };
 
+  const handleCheckout = () => {
+    setShowCheckout(true);
+  };
+
+  const handleBackToCart = () => {
+    setShowCheckout(false);
+  };
+
   // Calculate totals
   const calculateTotals = () => {
     const subtotal = products.reduce((sum, product) => {
@@ -67,6 +76,65 @@ const ShoppingCart = () => {
 
   const { subtotal, totalItems } = calculateTotals();
 
+  // Checkout Screen
+  if (showCheckout) {
+    return (
+      <div className="shopping-cart-container">
+        <div className="cart-header">
+          <h1>Checkout</h1>
+        </div>
+
+        <div className="checkout-section">
+          <button className="back-button" onClick={handleBackToCart}>
+            ← Back to Cart
+          </button>
+
+          <div className="checkout-content">
+            <h2>Order Summary</h2>
+            <div className="checkout-products">
+              {products.map(product => (
+                <div key={product.id} className="checkout-item">
+                  <div className="checkout-item-info">
+                    <h3>{product.name}</h3>
+                    {product.description && (
+                      <p className="checkout-item-description">{product.description}</p>
+                    )}
+                  </div>
+                  <div className="checkout-item-details">
+                    <span>${product.price.toFixed(2)} × {product.quantity}</span>
+                    <span className="checkout-item-total">
+                      ${(product.price * product.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="checkout-summary">
+              <div className="checkout-summary-row">
+                <span>Total Items:</span>
+                <span>{totalItems}</span>
+              </div>
+              <div className="checkout-summary-row">
+                <span>Total Products:</span>
+                <span>{products.length}</span>
+              </div>
+              <div className="checkout-summary-row checkout-total">
+                <span>Total Amount:</span>
+                <span>${subtotal}</span>
+              </div>
+            </div>
+
+            <button className="complete-checkout-button">
+              Complete Purchase
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Shopping Cart Screen
   return (
     <div className="shopping-cart-container">
       <div className="cart-header">
@@ -184,6 +252,9 @@ const ShoppingCart = () => {
                 <span className="summary-label">Subtotal:</span>
                 <span className="summary-value">${subtotal}</span>
               </div>
+              <button className="checkout-button" onClick={handleCheckout}>
+                Proceed to Checkout
+              </button>
             </div>
           </>
         )}
