@@ -49,6 +49,24 @@ const ShoppingCart = () => {
     setProducts(prev => prev.filter(product => product.id !== productId));
   };
 
+  // Calculate totals
+  const calculateTotals = () => {
+    const subtotal = products.reduce((sum, product) => {
+      return sum + (product.price * product.quantity);
+    }, 0);
+    
+    const totalItems = products.reduce((sum, product) => {
+      return sum + product.quantity;
+    }, 0);
+
+    return {
+      subtotal: subtotal.toFixed(2),
+      totalItems
+    };
+  };
+
+  const { subtotal, totalItems } = calculateTotals();
+
   return (
     <div className="shopping-cart-container">
       <div className="cart-header">
@@ -125,32 +143,49 @@ const ShoppingCart = () => {
         {products.length === 0 ? (
           <p className="empty-cart">Your cart is empty. Add products above!</p>
         ) : (
-          <div className="product-list">
-            {products.map(product => (
-              <div key={product.id} className="product-card">
-                <div className="product-info">
-                  <h3>{product.name}</h3>
-                  {product.description && (
-                    <p className="product-description">{product.description}</p>
-                  )}
-                  <div className="product-details">
-                    <span className="price">${product.price.toFixed(2)}</span>
-                    <span className="quantity">Qty: {product.quantity}</span>
-                    <span className="total">
-                      Total: ${(product.price * product.quantity).toFixed(2)}
-                    </span>
+          <>
+            <div className="product-list">
+              {products.map(product => (
+                <div key={product.id} className="product-card">
+                  <div className="product-info">
+                    <h3>{product.name}</h3>
+                    {product.description && (
+                      <p className="product-description">{product.description}</p>
+                    )}
+                    <div className="product-details">
+                      <span className="price">${product.price.toFixed(2)}</span>
+                      <span className="quantity">Qty: {product.quantity}</span>
+                      <span className="total">
+                        Total: ${(product.price * product.quantity).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
+                  <button 
+                    className="delete-button" 
+                    onClick={() => handleDeleteProduct(product.id)}
+                    aria-label="Delete product"
+                  >
+                    <span className="delete-icon">×</span>
+                  </button>
                 </div>
-                <button 
-                  className="delete-button" 
-                  onClick={() => handleDeleteProduct(product.id)}
-                  aria-label="Delete product"
-                >
-                  <span className="delete-icon">×</span>
-                </button>
+              ))}
+            </div>
+
+            <div className="cart-summary">
+              <div className="summary-row">
+                <span className="summary-label">Total Items:</span>
+                <span className="summary-value">{totalItems}</span>
               </div>
-            ))}
-          </div>
+              <div className="summary-row">
+                <span className="summary-label">Total Products:</span>
+                <span className="summary-value">{products.length}</span>
+              </div>
+              <div className="summary-row subtotal-row">
+                <span className="summary-label">Subtotal:</span>
+                <span className="summary-value">${subtotal}</span>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>
